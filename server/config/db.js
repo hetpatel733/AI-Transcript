@@ -6,7 +6,6 @@ async function startInMemoryMongo(){
     const mongod = await MongoMemoryServer.create()
     const uri = mongod.getUri()
     await mongoose.connect(uri)
-    console.log('Connected to in-memory MongoDB')
     return mongod
   }catch(err){
     console.error('Failed to start in-memory MongoDB', err)
@@ -23,7 +22,7 @@ const connectDB = async (uri) => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       })
-      console.log('MongoDB connected')
+      console.log('Database connected')
       return null
     } catch (err) {
       console.error('MongoDB connection error:', err.message)
