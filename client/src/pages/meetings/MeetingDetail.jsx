@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getMeeting, analyzeMeeting, deleteMeeting } from '../../services/meetingApi'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import Button from '../../components/ui/Button'
 
 export default function MeetingDetail(){
   const { meetingId } = useParams()
@@ -50,9 +51,9 @@ export default function MeetingDetail(){
           <div className="text-sm">Participants: {(meeting.participants||[]).join(', ')}</div>
         </div>
         <div className="flex gap-2">
-          <Link to={`/meetings/${meetingId}/edit`} className="px-3 py-2 bg-gray-200 rounded">Edit</Link>
-          <button onClick={handleDelete} className="px-3 py-2 bg-red-600 text-white rounded">Delete</button>
-          <button onClick={handleAnalyze} disabled={analyzing} aria-busy={analyzing} className={`px-3 py-2 text-white rounded ${analyzing ? 'bg-blue-400 opacity-70 cursor-not-allowed' : 'bg-blue-600'}`}>{analyzing ? 'Generating...' : 'Generate AI Analysis'}</button>
+          <Link to={`/meetings/${meetingId}/edit`}><Button variant="secondary" size="sm">Edit</Button></Link>
+          <Button variant="danger" onClick={handleDelete}>Delete</Button>
+          <Button variant="primary" onClick={handleAnalyze} disabled={analyzing} aria-busy={analyzing}>{analyzing ? 'Generating...' : 'Generate AI Analysis'}</Button>
         </div>
       </div>
 

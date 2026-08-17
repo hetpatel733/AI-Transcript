@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { listActions, deleteAction, updateAction } from '../../services/actionApi'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import Button from '../../components/ui/Button'
 
 export default function Actions(){
   const [actions, setActions] = useState([])
@@ -88,8 +89,8 @@ export default function Actions(){
                     </select>
                   </div>
                   <div className="flex gap-2">
-                    <button className="text-sm text-blue-600" onClick={()=>saveEdit(a.id)}>Save</button>
-                    <button className="text-sm" onClick={cancelEdit}>Cancel</button>
+                    <Button variant="primary" size="sm" onClick={()=>saveEdit(a.id)}>Save</Button>
+                    <Button variant="secondary" size="sm" onClick={cancelEdit}>Cancel</Button>
                   </div>
                 </div>
               ) : (
@@ -99,8 +100,8 @@ export default function Actions(){
                     <div className="text-sm text-gray-500">Meeting: {a.meetingId || '—'} · Owner: {a.owner || 'Unassigned'} · Due: {a.dueDate || 'Not specified'}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="text-sm" onClick={()=>startEdit(a)}>Edit</button>
-                    <button className="text-sm text-red-600" onClick={()=>handleDelete(a.id)}>Delete</button>
+                    <Button variant="secondary" size="sm" onClick={()=>startEdit(a)}>Edit</Button>
+                    <Button variant="danger" size="sm" onClick={()=>handleDelete(a.id)}>Delete</Button>
                   </div>
                 </div>
               )}

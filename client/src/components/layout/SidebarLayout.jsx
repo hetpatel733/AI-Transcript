@@ -1,6 +1,7 @@
 import React from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import Button from '../ui/Button'
 
 export default function SidebarLayout(){
   const { user, logout } = useAuth()
@@ -25,8 +26,8 @@ export default function SidebarLayout(){
         <div className="mt-auto pt-6">
         </div>
         <div className="absolute bottom-4 left-4">
-          <div className="text-sm">{user?.name}</div>
-          <button onClick={handleLogout} className="text-sm text-red-600">Logout</button>
+          <div className="text-sm mb-2">{user?.name}</div>
+          <Button variant="danger" size="sm" onClick={handleLogout}>Logout</Button>
         </div>
       </aside>
 

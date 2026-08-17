@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { listMeetings, deleteMeeting } from '../../services/meetingApi'
 import { Link } from 'react-router-dom'
+import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
 export default function Meetings(){
@@ -31,9 +32,9 @@ export default function Meetings(){
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-semibold">Meetings</h1>
-        <Link to="/meetings/new" className="text-sm bg-blue-600 text-white px-3 py-2 rounded">Create meeting</Link>
+        <Link to="/meetings/new"><Button variant="primary" size="md">Create meeting</Button></Link>
       </div>
       <input placeholder="Search by title" value={query} onChange={e=>setQuery(e.target.value)} className="mb-4 p-2 border rounded w-full" />
       {filtered.length === 0 ? (
@@ -50,9 +51,9 @@ export default function Meetings(){
                 <div className="text-sm">Participants: {(m.participants||[]).length ? (m.participants||[]).join(', ') : '—'}</div>
               </div>
               <div className="flex items-center gap-2">
-                <Link to={`/meetings/${mid}`} className="text-sm text-blue-600">View</Link>
-                <Link to={`/meetings/${mid}/edit`} className="text-sm">Edit</Link>
-                <button className="text-sm text-red-600" onClick={()=>handleDelete(mid)}>Delete</button>
+                <Link to={`/meetings/${mid}`}><Button variant="ghost" size="sm">View</Button></Link>
+                <Link to={`/meetings/${mid}/edit`}><Button variant="secondary" size="sm">Edit</Button></Link>
+                <Button variant="danger" size="sm" onClick={()=>handleDelete(mid)}>Delete</Button>
               </div>
             </div>
           )})}
