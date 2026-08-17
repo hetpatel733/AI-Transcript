@@ -26,8 +26,6 @@ router.use(auth)
 
 router.post('/', upload.single('transcriptFile'), [
   body('title').notEmpty(),
-  body('date').notEmpty(),
-  body('type').notEmpty(),
 ], validate, meetingController.createMeeting)
 
 router.get('/', meetingController.listMeetings)

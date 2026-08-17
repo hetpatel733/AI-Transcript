@@ -6,7 +6,9 @@ const { extractTextFromBuffer } = require('../utils/fileExtractor')
 
 exports.createMeeting = async (req, res) => {
   try{
-    const { title, date, type, participants } = req.body
+    const { title, participants } = req.body
+    let date = req.body.date
+    let type = req.body.type
     let transcript = req.body.transcript
 
     // If a file was uploaded, extract text server-side

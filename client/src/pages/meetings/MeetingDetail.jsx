@@ -27,7 +27,7 @@ export default function MeetingDetail(){
     const res = await analyzeMeeting(meetingId)
     setAnalyzing(false)
     if(res.success){
-      setMeeting(prev => ({...prev, ...res.analysis, actionItems: res.actionItems || prev.actionItems}))
+      setMeeting(prev => ({...prev, ...res.analysis, actionItems: res.actionItems || prev.actionItems, ...(res.meeting || {})}))
     }
   }
 

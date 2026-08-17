@@ -36,6 +36,9 @@ exports.analyzeMeeting = async (req, res) => {
 
     const result = await analyzeAndPersist(meeting)
     const normalized = result.created.map(it => ({ id: it._id, meetingId: it.meeting, task: it.task, owner: it.owner, dueDate: it.dueDate ? it.dueDate.toISOString().slice(0,10) : null, priority: it.priority, status: it.status }))
+    // reload meeting to include any metadata updates (participants/date)
+    const updatedMeeting = await Meeting.findById(meeting._id)
+    const meetingOut = updatedMeeting ? (()=>{ const o = updatedMeeting.toObject(); o.id = o._id; return { id: o.id, date: o.date ? o.date.toISOString().slice(0,10) : null, participants: o.participants || [], type: o.type || null } })() : null
     return success(res, {
       analysis: {
         id: meeting._id,
@@ -47,7 +50,8 @@ exports.analyzeMeeting = async (req, res) => {
         aiProcessed: true,
         aiProcessedAt: meeting.aiProcessedAt
       },
-      actionItems: normalized
+      actionItems: normalized,
+      meeting: meetingOut
     })
   }catch(err){
     console.error('AI error', err)

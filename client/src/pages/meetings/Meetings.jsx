@@ -46,8 +46,8 @@ export default function Meetings(){
             <div key={mid} className="p-3 bg-white rounded shadow flex justify-between">
               <div>
                 <div className="font-semibold">{m.title}</div>
-                <div className="text-sm text-gray-500">{m.date} · {m.type}</div>
-                <div className="text-sm">Participants: {(m.participants||[]).join(', ')}</div>
+                <div className="text-sm text-gray-500">{m.date ? (new Date(m.date).toISOString().slice(0,10)) : '—'} · {m.type || '—'}</div>
+                <div className="text-sm">Participants: {(m.participants||[]).length ? (m.participants||[]).join(', ') : '—'}</div>
               </div>
               <div className="flex items-center gap-2">
                 <Link to={`/meetings/${mid}`} className="text-sm text-blue-600">View</Link>

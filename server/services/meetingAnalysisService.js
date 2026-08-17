@@ -13,7 +13,9 @@ function normalizeAnalysis(raw){
     decisions: Array.isArray(raw.decisions) ? raw.decisions : [],
     actionItems: Array.isArray(raw.actionItems) ? raw.actionItems : [],
     risks: Array.isArray(raw.risks) ? raw.risks : [],
-    unansweredQuestions: Array.isArray(raw.unansweredQuestions) ? raw.unansweredQuestions : []
+    unansweredQuestions: Array.isArray(raw.unansweredQuestions) ? raw.unansweredQuestions : [],
+    participants: Array.isArray(raw.participants) ? raw.participants.map(p=>String(p).trim()).filter(Boolean) : [],
+    meetingDate: raw.meetingDate ? (new Date(raw.meetingDate)) : null
   }
   // normalize action items
   out.actionItems = out.actionItems.map(ai => {
@@ -46,6 +48,9 @@ async function analyzeAndPersist(meeting){
       if(ai.priority && !['Low','Medium','High'].includes(ai.priority)) return false
       if(ai.dueDate && !(ai.dueDate instanceof Date)) return false
     }
+      // participants optional array
+      if(p.participants && !Array.isArray(p.participants)) return false
+      if(p.meetingDate && !(p.meetingDate instanceof Date)) return false
     return true
   }
 
@@ -53,7 +58,15 @@ async function analyzeAndPersist(meeting){
     throw new Error('Invalid AI analysis format')
   }
 
-  // save to meeting
+  // update meeting metadata if AI provided participants or meetingDate
+  if(Array.isArray(parsed.participants) && parsed.participants.length>0){
+    meeting.participants = parsed.participants
+  }
+  if(parsed.meetingDate instanceof Date && !isNaN(parsed.meetingDate.getTime())){
+    meeting.date = parsed.meetingDate
+  }
+
+  // save analysis fields to meeting
   meeting.summary = parsed.summary
   meeting.discussionPoints = parsed.discussionPoints
   meeting.decisions = parsed.decisions

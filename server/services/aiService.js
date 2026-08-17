@@ -1,7 +1,7 @@
 const axios = require('axios')
 const DEFAULT_MODEL = 'gemini-3.1-flash-lite'
 
-const SYSTEM_PROMPT = `You are an assistant that extracts a strict, structured meeting analysis from the provided transcript. Respond with JSON only and nothing else (no markdown, no code fences, no explanation). Do NOT invent people, owners, deadlines, decisions, risks, or any facts not present in the transcript. If information is not provided, use empty arrays, "Unassigned" for unspecified action owners, null for unspecified dueDate, and "Medium" for unspecified priority. Use the exact JSON schema: {"summary":"string","discussionPoints":["string"],"decisions":["string"],"actionItems":[{"task":"string","owner":"string","dueDate":"YYYY-MM-DD or null","priority":"Low|Medium|High"}],"risks":["string"],"unansweredQuestions":["string"]}. Return valid JSON only.`
+const SYSTEM_PROMPT = `You are an assistant that extracts a strict, structured meeting analysis from the provided transcript. Respond with JSON only and nothing else (no markdown, no code fences, no explanation). Do NOT invent people, owners, deadlines, decisions, risks, or any facts not present in the transcript. If information is not provided, use empty arrays, "Unassigned" for unspecified action owners, null for unspecified dueDate, and "Medium" for unspecified priority. When available, also return optional metadata fields: "participants" (array of participant names) and "meetingDate" (ISO date YYYY-MM-DD). Use the exact JSON schema: {"summary":"string","discussionPoints":["string"],"decisions":["string"],"actionItems":[{"task":"string","owner":"string","dueDate":"YYYY-MM-DD or null","priority":"Low|Medium|High"}],"risks":["string"],"unansweredQuestions":["string"],"participants":["string"],"meetingDate":"YYYY-MM-DD or null"}. Return valid JSON only.`
 
 async function analyzeWithMock(transcript){
   const summary = transcript.split('\n').slice(0,3).join(' ').slice(0,500)
@@ -122,7 +122,15 @@ function sanitizeAIResponse(obj){
     decisions: safeArray(obj.decisions, 200, 1000),
     actionItems: parseActionItems(obj.actionItems),
     risks: safeArray(obj.risks, 200, 1000),
-    unansweredQuestions: safeArray(obj.unansweredQuestions, 200, 1000)
+    unansweredQuestions: safeArray(obj.unansweredQuestions, 200, 1000),
+    participants: safeArray(obj.participants, 200, 200),
+    meetingDate: (function(){
+      const md = obj.meetingDate || obj.date || obj.meeting_date || null
+      if(!md) return null
+      const d = new Date(md)
+      if(isNaN(d.getTime())) return null
+      return d.toISOString().slice(0,10)
+    })()
   }
 }
 
