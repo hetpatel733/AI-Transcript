@@ -20,7 +20,11 @@ export async function getMeeting(meetingId){
 
 export async function createMeeting(body){
   try{
-    const { data } = await client.post('/meetings', body)
+    const config = {}
+    if(body instanceof FormData){
+      config.headers = { 'Content-Type': 'multipart/form-data' }
+    }
+    const { data } = await client.post('/meetings', body, config)
     return data
   }catch(e){
     return client.handleError(e)
@@ -29,7 +33,11 @@ export async function createMeeting(body){
 
 export async function updateMeeting(meetingId, body){
   try{
-    const { data } = await client.put(`/meetings/${meetingId}`, body)
+    const config = {}
+    if(body instanceof FormData){
+      config.headers = { 'Content-Type': 'multipart/form-data' }
+    }
+    const { data } = await client.put(`/meetings/${meetingId}`, body, config)
     return data
   }catch(e){
     return client.handleError(e)

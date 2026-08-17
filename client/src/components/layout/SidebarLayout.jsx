@@ -1,11 +1,9 @@
 import React from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { useTheme } from '../../context/ThemeContext'
 
 export default function SidebarLayout(){
   const { user, logout } = useAuth()
-  const { theme, toggle } = useTheme()
   const navigate = useNavigate()
 
   const handleLogout = async ()=>{
@@ -15,7 +13,7 @@ export default function SidebarLayout(){
 
   return (
     <div className="min-h-screen flex">
-      <aside className="w-64 bg-white dark:bg-gray-900 border-r p-4 hidden md:block">
+      <aside className="w-64 bg-white dark:bg-gray-900 border-r p-4 hidden md:block fixed top-0 left-0 h-full">
         <div className="mb-6">
           <Link to="/dashboard" className="text-lg font-semibold">AI Meeting Notes</Link>
         </div>
@@ -25,7 +23,6 @@ export default function SidebarLayout(){
           <Link to="/actions" className="block py-2">Action Tracker</Link>
         </nav>
         <div className="mt-auto pt-6">
-          <button onClick={toggle} className="text-sm py-2">Theme: {theme}</button>
         </div>
         <div className="absolute bottom-4 left-4">
           <div className="text-sm">{user?.name}</div>
@@ -33,7 +30,7 @@ export default function SidebarLayout(){
         </div>
       </aside>
 
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 md:ml-64">
         <Outlet />
       </div>
     </div>

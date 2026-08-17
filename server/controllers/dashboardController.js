@@ -10,7 +10,14 @@ exports.getDashboard = async (req, res) => {
     const openActionItems = await ActionItem.countDocuments({ user: userId, status: 'Open' })
     const completedActionItems = await ActionItem.countDocuments({ user: userId, status: 'Completed' })
     const overdueActionItems = await ActionItem.countDocuments({ user: userId, dueDate: { $lt: new Date() }, status: { $ne: 'Completed' } })
-    const recentMeetings = await Meeting.find({ user: userId }).sort({ createdAt: -1 }).limit(5)
+    const recentMeetingsDocs = await Meeting.find({ user: userId }).sort({ createdAt: -1 }).limit(5)
+    const recentMeetings = []
+    for(const m of recentMeetingsDocs){
+      const obj = m.toObject()
+      const count = await ActionItem.countDocuments({ meeting: m._id, user: userId })
+      obj.actionCount = count
+      recentMeetings.push(obj)
+    }
     return success(res, { stats: { totalMeetings, totalActionItems, openActionItems, completedActionItems, overdueActionItems }, recentMeetings })
   }catch(err){
     console.error(err)

@@ -27,7 +27,7 @@ export default function MeetingDetail(){
     const res = await analyzeMeeting(meetingId)
     setAnalyzing(false)
     if(res.success){
-      setMeeting(prev => ({...prev, ...res.analysis}))
+      setMeeting(prev => ({...prev, ...res.analysis, actionItems: res.actionItems || prev.actionItems}))
     }
   }
 
@@ -52,7 +52,7 @@ export default function MeetingDetail(){
         <div className="flex gap-2">
           <Link to={`/meetings/${meetingId}/edit`} className="px-3 py-2 bg-gray-200 rounded">Edit</Link>
           <button onClick={handleDelete} className="px-3 py-2 bg-red-600 text-white rounded">Delete</button>
-          <button onClick={handleAnalyze} className="px-3 py-2 bg-blue-600 text-white rounded">{analyzing ? 'Generating...' : 'Generate AI Analysis'}</button>
+          <button onClick={handleAnalyze} disabled={analyzing} aria-busy={analyzing} className={`px-3 py-2 text-white rounded ${analyzing ? 'bg-blue-400 opacity-70 cursor-not-allowed' : 'bg-blue-600'}`}>{analyzing ? 'Generating...' : 'Generate AI Analysis'}</button>
         </div>
       </div>
 

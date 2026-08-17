@@ -6,24 +6,35 @@ const auth = require('../middleware/authMiddleware')
 const meetingController = require('../controllers/meetingController')
 const aiController = require('../controllers/aiController')
 const rateLimit = require('express-rate-limit')
+const multer = require('multer')
 
-const analyzeLimiter = rateLimit({ windowMs: 60*1000, max: 3 })
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } }) // 10MB
+
+// Configurable analyze rate limiter. Defaults to 3 requests per minute.
+// You can override with env vars: ANALYZE_RATE_LIMIT_MAX, ANALYZE_RATE_LIMIT_WINDOW_MS
+// Or disable entirely in non-production for testing: AI_RATE_LIMIT_DISABLED=true
+let analyzeLimiter
+if(process.env.AI_RATE_LIMIT_DISABLED === 'true'){
+  analyzeLimiter = (req, res, next) => next()
+} else {
+  const windowMs = process.env.ANALYZE_RATE_LIMIT_WINDOW_MS ? parseInt(process.env.ANALYZE_RATE_LIMIT_WINDOW_MS, 10) : 60 * 1000
+  const max = process.env.ANALYZE_RATE_LIMIT_MAX ? parseInt(process.env.ANALYZE_RATE_LIMIT_MAX, 10) : 3
+  analyzeLimiter = rateLimit({ windowMs, max, standardHeaders: true, legacyHeaders: false })
+}
 
 router.use(auth)
 
-router.post('/', [
+router.post('/', upload.single('transcriptFile'), [
   body('title').notEmpty(),
   body('date').notEmpty(),
   body('type').notEmpty(),
-  body('participants').isArray().withMessage('Participants must be an array'),
-  body('transcript').notEmpty()
 ], validate, meetingController.createMeeting)
 
 router.get('/', meetingController.listMeetings)
 
 router.get('/:meetingId', [param('meetingId').notEmpty()], validate, meetingController.getMeeting)
 
-router.put('/:meetingId', [param('meetingId').notEmpty()], validate, meetingController.updateMeeting)
+router.put('/:meetingId', upload.single('transcriptFile'), [param('meetingId').notEmpty()], validate, meetingController.updateMeeting)
 
 router.delete('/:meetingId', meetingController.deleteMeeting)
 

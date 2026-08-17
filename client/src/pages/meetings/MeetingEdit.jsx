@@ -12,6 +12,7 @@ export default function MeetingEdit(){
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [file, setFile] = useState(null)
   const navigate = useNavigate()
 
   useEffect(()=>{
@@ -29,11 +30,36 @@ export default function MeetingEdit(){
     setError(null)
     if(!meeting.title) return setError('Meeting title cannot be empty')
     setSubmitting(true)
-    const body = { ...meeting, participants: meeting.participants }
-    const res = await updateMeeting(meetingId, body)
+    let res
+    if(file){
+      const form = new FormData()
+      form.append('title', meeting.title)
+      form.append('date', meeting.date)
+      form.append('type', meeting.type)
+      form.append('participants', JSON.stringify(meeting.participants))
+      form.append('transcriptFile', file)
+      if(meeting.transcript) form.append('transcript', meeting.transcript)
+      res = await updateMeeting(meetingId, form)
+    }else{
+      const body = { ...meeting, participants: meeting.participants }
+      res = await updateMeeting(meetingId, body)
+    }
     setSubmitting(false)
     if(res.success) navigate(`/meetings/${meetingId}`)
     else setError(res.message)
+  }
+
+  const handleFile = (e) => {
+    const f = e.target.files[0]
+    if(!f) return
+    const allowed = ['text/plain','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    if(!allowed.includes(f.type)) return setError('Only txt, pdf and docx files are supported')
+    setFile(f)
+    if(f.type === 'text/plain'){
+      const reader = new FileReader()
+      reader.onload = () => setMeeting({...meeting, transcript: reader.result})
+      reader.readAsText(f)
+    }
   }
 
   if(loading) return <LoadingSpinner />
@@ -48,6 +74,7 @@ export default function MeetingEdit(){
         <Input label="Meeting Type" value={meeting.type} onChange={e=>setMeeting({...meeting, type: e.target.value})} />
         <Textarea label="Participants (comma separated)" value={(meeting.participants||[]).join(', ')} onChange={e=>setMeeting({...meeting, participants: e.target.value.split(',').map(s=>s.trim())})} />
         <Textarea label="Transcript" value={meeting.transcript} onChange={e=>setMeeting({...meeting, transcript: e.target.value})} />
+        <input type="file" accept=".txt,.pdf,.docx" onChange={handleFile} className="mt-2" />
         {error && <div className="text-red-600 mb-2">{error}</div>}
         <Button type="submit" disabled={submitting}>{submitting ? 'Saving...' : 'Save changes'}</Button>
       </form>

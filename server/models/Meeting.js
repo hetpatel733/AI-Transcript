@@ -3,10 +3,10 @@ const mongoose = require('mongoose')
 const meetingSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   title: { type: String, required: true, trim: true },
-  date: { type: Date, required: true },
-  type: { type: String, required: true },
+  date: { type: Date },
+  type: { type: String },
   participants: [{ type: String }],
-  transcript: { type: String, required: true },
+  transcript: { type: String },
   summary: { type: String, default: '' },
   discussionPoints: [{ type: String }],
   decisions: [{ type: String }],

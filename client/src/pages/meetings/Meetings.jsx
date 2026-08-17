@@ -40,20 +40,22 @@ export default function Meetings(){
         <div className="p-6 bg-white rounded shadow">No meetings found.</div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(m=> (
-            <div key={m.id} className="p-3 bg-white rounded shadow flex justify-between">
+          {filtered.map(m=> {
+            const mid = m.id || m._id || (m._id && m._id.$oid) || ''
+            return (
+            <div key={mid} className="p-3 bg-white rounded shadow flex justify-between">
               <div>
                 <div className="font-semibold">{m.title}</div>
                 <div className="text-sm text-gray-500">{m.date} · {m.type}</div>
                 <div className="text-sm">Participants: {(m.participants||[]).join(', ')}</div>
               </div>
               <div className="flex items-center gap-2">
-                <Link to={`/meetings/${m.id}`} className="text-sm text-blue-600">View</Link>
-                <Link to={`/meetings/${m.id}/edit`} className="text-sm">Edit</Link>
-                <button className="text-sm text-red-600" onClick={()=>handleDelete(m.id)}>Delete</button>
+                <Link to={`/meetings/${mid}`} className="text-sm text-blue-600">View</Link>
+                <Link to={`/meetings/${mid}/edit`} className="text-sm">Edit</Link>
+                <button className="text-sm text-red-600" onClick={()=>handleDelete(mid)}>Delete</button>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       )}
     </div>

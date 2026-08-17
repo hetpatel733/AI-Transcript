@@ -46,15 +46,17 @@ export default function Dashboard(){
           <div className="p-6 bg-white rounded shadow">No meetings yet. Create your first meeting to start extracting AI-powered insights.</div>
         ) : (
           <div className="space-y-2">
-            {recent.map(m=> (
-              <div key={m.id} className="p-3 bg-white rounded shadow flex justify-between">
+            {recent.map(m=> {
+              const mid = m.id || m._id || (m._id && m._id.$oid) || ''
+              return (
+              <div key={mid} className="p-3 bg-white rounded shadow flex justify-between">
                 <div>
                   <div className="font-semibold">{m.title}</div>
-                  <div className="text-sm text-gray-500">{m.date} · {m.type}</div>
+                  <div className="text-sm text-gray-500">{m.date ? (new Date(m.date).toISOString().slice(0,10)) : '—'} · {m.type || '—'}</div>
                 </div>
-                <div className="text-sm">{(m.actionItems || []).length} actions</div>
+                <div className="text-sm">{(m.actionCount ?? (m.actionItems || []).length)} actions</div>
               </div>
-            ))}
+            )})}
           </div>
         )}
       </section>

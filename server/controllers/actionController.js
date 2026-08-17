@@ -14,7 +14,8 @@ exports.listActions = async (req, res) => {
     if(dueDate) filter.dueDate = { $eq: new Date(dueDate) }
     // sort: overdue, nearest due date, newest
     const items = await ActionItem.find(filter).sort({ dueDate: 1, createdAt: -1 })
-    return success(res, { actionItems: items })
+    const normalized = items.map(it => ({ id: it._id, meetingId: it.meeting, task: it.task, owner: it.owner, dueDate: it.dueDate ? it.dueDate.toISOString().slice(0,10) : null, priority: it.priority, status: it.status }))
+    return success(res, { actionItems: normalized })
   }catch(err){
     console.error(err)
     return error(res, 500, 'Could not load action items')
@@ -28,8 +29,10 @@ exports.createAction = async (req, res) => {
     const meeting = await Meeting.findOne({ _id: meetingId, user: req.user._id })
     if(!meeting) return error(res, 404, 'Meeting not found')
     if(!task) return error(res, 422, 'Task is required')
-    const item = await ActionItem.create({ meeting: meetingId, user: req.user._id, task: task.trim(), owner: owner || 'Unassigned', dueDate: dueDate ? new Date(dueDate) : undefined, priority: priority || 'Medium', status: status || 'Open', source: 'manual' })
-    return success(res, { action: item })
+    const defaultOwner = owner || req.user?.name || 'Unassigned'
+    const item = await ActionItem.create({ meeting: meetingId, user: req.user._id, task: task.trim(), owner: defaultOwner, dueDate: dueDate ? new Date(dueDate) : undefined, priority: priority || 'Medium', status: status || 'Open', source: 'manual' })
+    const out = { id: item._id, meetingId: item.meeting, task: item.task, owner: item.owner, dueDate: item.dueDate ? item.dueDate.toISOString().slice(0,10) : null, priority: item.priority, status: item.status }
+    return success(res, { action: out })
   }catch(err){
     console.error(err)
     return error(res, 500, 'Could not create action item')
@@ -49,7 +52,8 @@ exports.updateAction = async (req, res) => {
       }
     }
     await action.save()
-    return success(res, { action })
+    const out = { id: action._id, meetingId: action.meeting, task: action.task, owner: action.owner, dueDate: action.dueDate ? action.dueDate.toISOString().slice(0,10) : null, priority: action.priority, status: action.status }
+    return success(res, { action: out })
   }catch(err){
     console.error(err)
     return error(res, 500, 'Could not update action')
