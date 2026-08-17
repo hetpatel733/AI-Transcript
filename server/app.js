@@ -4,6 +4,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
+const path = require('path')
 const authRoutes = require('./routes/authRoutes')
 const meetingRoutes = require('./routes/meetingRoutes')
 const actionRoutes = require('./routes/actionRoutes')
@@ -31,7 +32,16 @@ app.use('/api/meetings', meetingRoutes)
 app.use('/api/actions', actionRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 
-app.use(notFound)
+// Serve built React frontend in production
+if(process.env.NODE_ENV === 'production'){
+  const staticPath = path.join(__dirname, 'public')
+  app.use(express.static(staticPath))
+  // All non-API routes return the React app
+  app.get('*', (req, res) => res.sendFile(path.join(staticPath, 'index.html')))
+} else {
+  app.use(notFound)
+}
+
 app.use(errorHandler)
 
 module.exports = app

@@ -25,9 +25,29 @@ export default function Login(){
     else setError(res.message || 'Invalid credentials')
   }
 
+  const demoEmail = 'test@gmail.com'
+  const demoPassword = 'Test@123'
+  const handleAutoFill = ()=>{
+    setEmail(demoEmail)
+    setPassword(demoPassword)
+  }
+
   return (
     <div className="max-w-md mx-auto mt-20 p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-semibold mb-4">Login</h2>
+      <h2 className="text-xl font-semibold mb-4">Sign In</h2>
+      <div className="mb-4 p-4 rounded border flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600">i</span>
+            <strong>Try Demo Account</strong>
+          </div>
+          <div className="text-sm">Email: <span className="font-medium">{demoEmail}</span></div>
+          <div className="text-sm">Password: <span className="font-medium">{demoPassword}</span></div>
+        </div>
+        <div>
+          <Button variant="primary" size="sm" onClick={handleAutoFill}>Auto Fill</Button>
+        </div>
+      </div>
       <form onSubmit={handleSubmit}>
         <Input label="Email" value={email} onChange={e=>setEmail(e.target.value)} />
         <Input label="Password" type="password" value={password} onChange={e=>setPassword(e.target.value)} />

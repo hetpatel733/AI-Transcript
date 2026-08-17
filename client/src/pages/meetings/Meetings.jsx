@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { listMeetings, deleteMeeting } from '../../services/meetingApi'
 import { Link } from 'react-router-dom'
 import Button from '../../components/ui/Button'
+import { useUi } from '../../context/UiContext'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
 export default function Meetings(){
@@ -20,8 +21,10 @@ export default function Meetings(){
 
   useEffect(()=>{ fetch() },[])
 
+  const ui = useUi()
   const handleDelete = async (id)=>{
-    if(!confirm('Are you sure? This action cannot be undone.')) return
+    const ok = await ui.confirm('Are you sure? This action cannot be undone.')
+    if(!ok) return
     await deleteMeeting(id)
     fetch()
   }

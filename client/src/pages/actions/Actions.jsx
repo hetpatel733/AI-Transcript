@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { listActions, deleteAction, updateAction } from '../../services/actionApi'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import Button from '../../components/ui/Button'
+import { useUi } from '../../context/UiContext'
 
 export default function Actions(){
   const [actions, setActions] = useState([])
@@ -20,13 +21,16 @@ export default function Actions(){
   useEffect(()=>{ fetch() },[])
 
   const handleDelete = async (id)=>{
-    if(!confirm('Are you sure? This action cannot be undone.')) return
+    const ok = await ui.confirm('Are you sure? This action cannot be undone.')
+    if(!ok) return
     await deleteAction(id)
     fetch()
   }
 
   const [editingId, setEditingId] = useState(null)
   const [editValues, setEditValues] = useState({ task: '', owner: '', dueDate: '', priority: 'Medium', status: 'Open' })
+  const [processingId, setProcessingId] = useState(null)
+  const ui = useUi()
 
   const startEdit = (a) => {
     setEditingId(a.id)
@@ -45,7 +49,22 @@ export default function Actions(){
       cancelEdit()
       fetch()
     }else{
-      alert(res.message || 'Could not update action')
+      ui.toast(res.message || 'Could not update action')
+    }
+  }
+
+  const handleDone = async (id) => {
+    const ok = await ui.confirm('Mark this action as completed?')
+    if(!ok) return
+    try{
+      setProcessingId(id)
+      const res = await updateAction(id, { status: 'Completed' })
+      setProcessingId(null)
+      if(res.success) fetch()
+      else ui.toast(res.message || 'Could not mark action as completed')
+    }catch(e){
+      setProcessingId(null)
+      ui.toast('Could not mark action as completed')
     }
   }
 
@@ -100,6 +119,11 @@ export default function Actions(){
                     <div className="text-sm text-gray-500">Meeting: {a.meetingId || '—'} · Owner: {a.owner || 'Unassigned'} · Due: {a.dueDate || 'Not specified'}</div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {a.status === 'Completed' ? (
+                      <Button variant="secondary" size="sm" disabled>Completed</Button>
+                    ) : (
+                      <Button variant="success" size="sm" onClick={()=>handleDone(a.id)} disabled={processingId===a.id}>{processingId===a.id ? 'Working...' : 'Done'}</Button>
+                    )}
                     <Button variant="secondary" size="sm" onClick={()=>startEdit(a)}>Edit</Button>
                     <Button variant="danger" size="sm" onClick={()=>handleDelete(a.id)}>Delete</Button>
                   </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getMeeting, analyzeMeeting, deleteMeeting } from '../../services/meetingApi'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import Button from '../../components/ui/Button'
+import { useUi } from '../../context/UiContext'
 
 export default function MeetingDetail(){
   const { meetingId } = useParams()
@@ -11,6 +12,7 @@ export default function MeetingDetail(){
   const [error, setError] = useState(null)
   const [analyzing, setAnalyzing] = useState(false)
   const navigate = useNavigate()
+  const ui = useUi()
 
   useEffect(()=>{
     let mounted = true
@@ -33,7 +35,8 @@ export default function MeetingDetail(){
   }
 
   const handleDelete = async ()=>{
-    if(!confirm('Are you sure? This action cannot be undone.')) return
+    const ok = await ui.confirm('Are you sure? This action cannot be undone.')
+    if(!ok) return
     await deleteMeeting(meetingId)
     navigate('/meetings')
   }

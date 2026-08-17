@@ -1,0 +1,12 @@
+**/node_modules
+**/.git
+**/.DS_Store
+**/logs
+**/*.log
+**/npm-debug.log*
+
+# client build output (built inside Docker, not needed from host)
+client/dist
+
+# server runtime files not needed in image
+server/scripts

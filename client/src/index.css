@@ -3,15 +3,33 @@
 @tailwind utilities;
 
 :root{
-  --bg: #f8fafc;
+  --bg: #f6f7fb;
   --card: #ffffff;
-  --text: #111827;
+  --text: #0f1724;
+  --muted: #6b7280;
+  --border: #e6e9ef;
+  --primary: #2563eb; /* blue-600 */
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --surface-muted: #f3f4f6;
 }
 
 [data-theme='dark']{
-  --bg: #0b1220;
-  --card: #0f1724;
+  --bg: #071025;
+  --card: #071427;
   --text: #e6eef8;
+  --muted: #9ca3af;
+  --border: #0f1724;
+  --primary: #60a5fa; /* lighter blue for dark */
+  --primary-600: #60a5fa;
+  --primary-700: #3b82f6;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #fb7185;
+  --surface-muted: #0b1220;
 }
 
 body{
@@ -19,5 +37,109 @@ body{
   color: var(--text);
 }
 
+/* Map common Tailwind utility names used in the app to the theme variables for consistent surfaces */
+.bg-white{ background-color: var(--card) !important }
+.text-gray-500{ color: var(--muted) !important }
+.bg-gray-200{ background-color: var(--surface-muted) !important }
+.bg-gray-100{ background-color: var(--surface-muted) !important }
+.text-gray-800{ color: var(--text) !important }
+.border{ border-color: var(--border) !important }
+.shadow{ box-shadow: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06) }
+
+/* Utility classes for badges and subtle surfaces */
+.surface { background: var(--card); color: var(--text) }
+.muted { color: var(--muted) }
+.primary { color: var(--primary) }
+.badge { background: rgba(37,99,235,0.08); color: var(--primary); padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem }
+
+/* Accessible focus ring for buttons */
+button:focus{ outline: 2px solid transparent; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+
+/* Button variants mapped to theme variables */
+.btn-primary{ background: var(--primary); color: white }
+.btn-primary:hover{ background: var(--primary-700) }
+.btn-secondary{ background: var(--surface-muted); color: var(--text) }
+.btn-secondary:hover{ background: rgba(0,0,0,0.04) }
+.btn-danger{ background: var(--danger); color: white }
+.btn-danger:hover{ filter: brightness(0.95) }
+.btn-ghost{ background: transparent; color: var(--text) }
+.btn-ghost:hover{ background: rgba(0,0,0,0.03) }
+.btn-success{ background: var(--success); color: white }
+.btn-warning{ background: var(--warning); color: #111 }
+.btn-disabled{ opacity: 0.6; cursor: not-allowed }
+
+/* Smooth theme transitions */
+html, body, .surface, .bg-white, .card, .container, .btn-primary, .btn-secondary, .btn-ghost{ transition: background-color 240ms ease, color 240ms ease, border-color 240ms ease }
+
+/* Theme toggle styles */
+.theme-toggle{ display:inline-flex; align-items:center; gap:0.5rem }
+.toggle-button{ position:relative; width:56px; height:32px; border-radius:9999px; background: var(--surface-muted); display:inline-flex; align-items:center; padding:4px; cursor:pointer; border:1px solid var(--border) }
+.toggle-button .thumb{ width:26px; height:26px; border-radius:9999px; background: var(--card); transform: translateX(0); transition: transform 220ms cubic-bezier(.2,.9,.2,1), background 220ms; box-shadow: 0 2px 6px rgba(2,6,23,0.08); border:1px solid var(--border); z-index:2 }
+.toggle-button .icon{ position: absolute; top: 50%; transform: translateY(-50%); display: inline-flex; align-items:center; justify-content:center; z-index:1 }
+.toggle-button .icon-left{ left:10px }
+.toggle-button .icon-right{ right:10px }
+.toggle-button .icon svg{ display:block }
+.toggle-button .icon svg *{ transition: opacity 180ms, transform 180ms }
+.toggle-button .icon{ width:16px; height:16px; display:inline-block }
+.toggle-button[data-mode='dark']{ background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); border-color: rgba(255,255,255,0.06) }
+.toggle-button[data-mode='dark'] .thumb{ transform: translateX(26px); background: var(--card) }
+.toggle-button[data-mode='dark'] .icon-left{ opacity: 0.4; transform: translateY(-50%) scale(0.9); color: var(--muted) }
+.toggle-button[data-mode='dark'] .icon-right{ opacity: 1; transform: translateY(-50%) scale(1.05); color: var(--primary-600) }
+.toggle-button[data-mode='light']{ background: var(--surface-muted); border-color: var(--border) }
+.toggle-button[data-mode='light'] .icon-left{ opacity: 1; transform: translateY(-50%) scale(1.05); color: #f59e0b /* amber */ }
+.toggle-button[data-mode='light'] .icon-right{ opacity: 0.45; transform: translateY(-50%) scale(0.9); color: var(--muted) }
+
+/* ensure svg picks up color via currentColor */
+.toggle-button .icon svg{ color: inherit }
+.toggle-button .icon svg *{ fill: currentColor; stroke: currentColor }
+.toggle-button:focus{ box-shadow: 0 0 0 3px rgba(59,130,246,0.16) }
+
+/* Icons color */
+.icon-sun{ color: #fbbf24 }
+.icon-moon{ color: #60a5fa }
+
+@media (prefers-reduced-motion: reduce){
+  html, body, .surface, .btn-primary{ transition: none }
+  .toggle-button .thumb{ transition: none }
+}
+
 /* Utility for container */
 .container{max-width:1200px;margin:0 auto;padding:1rem}
+
+/* Themed form controls */
+input, textarea, select, .input {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+}
+
+input::placeholder, textarea::placeholder{ color: var(--muted) }
+
+/* Ensure disabled look */
+input:disabled, textarea:disabled, select:disabled{ opacity: 0.6 }
+
+/* Page transition animation for route changes */
+.transition-wrapper{ will-change: transform, opacity }
+.transition-wrapper.page-enter{ animation: pageIn 360ms cubic-bezier(.2,.9,.2,1) }
+@keyframes pageIn{
+  from{ opacity: 0; transform: translateY(8px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* Navbar link styles and active highlight */
+.nav-link{ display:inline-block; padding:0.5rem 0.75rem; border-radius:0.375rem; color:var(--text); text-decoration:none; transition: background-color 180ms, color 180ms, transform 160ms }
+.nav-link:hover{ background: rgba(0,0,0,0.04) }
+.nav-link.active{ background: var(--primary); color: white; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(2,6,23,0.18) }
+
+@media (prefers-color-scheme: dark){
+  .nav-link:hover{ background: rgba(255,255,255,0.02) }
+  .nav-link.active{ box-shadow: 0 6px 18px rgba(2,6,23,0.36) }
+}
+
+/* When a modal is open, subtly blur the header to focus the modal */
+.ui-modal-open header{ /* lower header stacking and disable interactions while modal is open */
+  z-index: 0 !important;
+  pointer-events: none;
+}
+.ui-modal-open header, .ui-modal-open header *{ transition: none }
