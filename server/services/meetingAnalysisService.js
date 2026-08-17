@@ -31,6 +31,28 @@ async function analyzeAndPersist(meeting){
   if(!meeting || !meeting.transcript) throw new Error('Transcript missing')
   const raw = await aiService.analyze(meeting.transcript)
   const parsed = normalizeAnalysis(raw)
+  // validate parsed structure strictly before saving
+  function validateParsed(p){
+    if(typeof p.summary !== 'string') return false
+    if(!Array.isArray(p.discussionPoints)) return false
+    if(!Array.isArray(p.decisions)) return false
+    if(!Array.isArray(p.risks)) return false
+    if(!Array.isArray(p.unansweredQuestions)) return false
+    if(!Array.isArray(p.actionItems)) return false
+    // validate action items
+    for(const ai of p.actionItems){
+      if(!ai.task || typeof ai.task !== 'string') return false
+      if(ai.owner && typeof ai.owner !== 'string') return false
+      if(ai.priority && !['Low','Medium','High'].includes(ai.priority)) return false
+      if(ai.dueDate && !(ai.dueDate instanceof Date)) return false
+    }
+    return true
+  }
+
+  if(!validateParsed(parsed)){
+    throw new Error('Invalid AI analysis format')
+  }
+
   // save to meeting
   meeting.summary = parsed.summary
   meeting.discussionPoints = parsed.discussionPoints
