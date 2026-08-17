@@ -21,7 +21,7 @@ FROM nginx:stable-alpine AS production
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/dist /usr/share/nginx/html
 # Copy custom nginx config for SPA fallback
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY client/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Optional: expose port 80 (mapped by compose)
 EXPOSE 80
