@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #111827;
+}
+
+[data-theme='dark']{
+  --bg: #0b1220;
+  --card: #0f1724;
+  --text: #e6eef8;
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Utility for container */
+.container{max-width:1200px;margin:0 auto;padding:1rem}
