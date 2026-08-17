@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Input from '../../components/ui/Input'
 import Button from '../../components/ui/Button'
@@ -12,7 +12,7 @@ export default function Login(){
   const { login, user } = useAuth()
   const navigate = useNavigate()
 
-  if(user) navigate('/dashboard')
+  useEffect(()=>{ if(user) navigate('/dashboard') }, [user])
 
   const handleSubmit = async (e)=>{
     e.preventDefault()

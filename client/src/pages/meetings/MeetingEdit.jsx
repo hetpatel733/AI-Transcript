@@ -70,13 +70,15 @@ export default function MeetingEdit(){
       <h2 className="text-xl font-semibold mb-4">Edit Meeting</h2>
       <form onSubmit={handleSubmit}>
         <Input label="Meeting Title *" value={meeting.title} onChange={e=>setMeeting({...meeting, title: e.target.value})} />
-        <Input label="Meeting Date *" type="date" value={meeting.date} onChange={e=>setMeeting({...meeting, date: e.target.value})} />
+        <Input label="Meeting Date *" type="date" value={meeting.date ? new Date(meeting.date).toISOString().slice(0,10) : ''} onChange={e=>setMeeting({...meeting, date: e.target.value})} />
         <Input label="Meeting Type" value={meeting.type} onChange={e=>setMeeting({...meeting, type: e.target.value})} />
         <Textarea label="Participants (comma separated)" value={(meeting.participants||[]).join(', ')} onChange={e=>setMeeting({...meeting, participants: e.target.value.split(',').map(s=>s.trim())})} />
         <Textarea label="Transcript" value={meeting.transcript} onChange={e=>setMeeting({...meeting, transcript: e.target.value})} />
         <input type="file" accept=".txt,.pdf,.docx" onChange={handleFile} className="mt-2" />
         {error && <div className="text-red-600 mb-2">{error}</div>}
-        <Button type="submit" disabled={submitting}>{submitting ? 'Saving...' : 'Save changes'}</Button>
+        <div className="mt-4">
+          <Button type="submit" disabled={submitting}>{submitting ? 'Saving...' : 'Save changes'}</Button>
+        </div>
       </form>
     </div>
   )

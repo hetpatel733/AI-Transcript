@@ -10,6 +10,11 @@ export default function Actions(){
   const [error, setError] = useState(null)
   const [query, setQuery] = useState('')
 
+  const [editingId, setEditingId] = useState(null)
+  const [editValues, setEditValues] = useState({ task: '', owner: '', dueDate: '', priority: 'Medium', status: 'Open' })
+  const [processingId, setProcessingId] = useState(null)
+  const ui = useUi()
+
   const fetch = ()=>{
     setLoading(true)
     listActions().then(res=>{
@@ -21,17 +26,19 @@ export default function Actions(){
   useEffect(()=>{ fetch() },[])
 
   const handleDelete = async (id)=>{
-    const ok = await ui.confirm('Are you sure? This action cannot be undone.')
+    const ok = await ui.confirm('Delete this action item?')
     if(!ok) return
-    await deleteAction(id)
-    fetch()
+    try{
+      setProcessingId(id)
+      const res = await deleteAction(id)
+      setProcessingId(null)
+      if(res.success) fetch()
+      else ui.toast(res.message || 'Could not delete action')
+    }catch(e){
+      setProcessingId(null)
+      ui.toast('Could not delete action')
+    }
   }
-
-  const [editingId, setEditingId] = useState(null)
-  const [editValues, setEditValues] = useState({ task: '', owner: '', dueDate: '', priority: 'Medium', status: 'Open' })
-  const [processingId, setProcessingId] = useState(null)
-  const ui = useUi()
-
   const startEdit = (a) => {
     setEditingId(a.id)
     setEditValues({ task: a.task || '', owner: a.owner || '', dueDate: a.dueDate || '', priority: a.priority || 'Medium', status: a.status || 'Open' })
